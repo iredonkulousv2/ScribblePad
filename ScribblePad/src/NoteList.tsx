@@ -13,6 +13,7 @@ import { Link } from "react-router-dom"
 import ReactSelect from "react-select"
 import { Tag } from "./App"
 import styles from "./NoteList.module.css"
+import axios from 'axios'
 
 type SimplifiedNote = {
   tags: Tag[]
@@ -58,8 +59,19 @@ export function NoteList({
     })
   }, [title, selectedTags, notes])
 
+  const randomFunc = () => {
+    axios.get('/api')
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+  }
+
   return (
     <>
+    <button onClick={randomFunc}>HI</button>
       <Row className="align-items-center mb-4">
         <Col>
           <h1>Notes</h1>
@@ -133,6 +145,7 @@ export function NoteList({
 
 function NoteCard({ id, title, tags }: SimplifiedNote) {
   return (
+    <>
     <Card
       as={Link}
       to={`/${id}`}
@@ -160,6 +173,7 @@ function NoteCard({ id, title, tags }: SimplifiedNote) {
         </Stack>
       </Card.Body>
     </Card>
+    </>
   )
 }
 
