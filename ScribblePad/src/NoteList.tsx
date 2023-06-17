@@ -69,9 +69,37 @@ export function NoteList({
   });
   }
 
+  const signUp = () => {
+    axios.post('/api/signup', {
+      username: 'Fred',
+      password: 'Flintstone'
+    })
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
+
+  const login = () => {
+    axios.post('/api/login', {
+      username: 'Fred',
+      password: 'Flintstone'
+    })
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
+
   return (
     <>
     <button onClick={randomFunc}>HI</button>
+    <button onClick={login}>Login</button>
+    <button onClick={signUp}>Signup</button>
       <Row className="align-items-center mb-4">
         <Col>
           <h1>Notes</h1>
