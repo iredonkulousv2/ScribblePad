@@ -4,6 +4,7 @@ import {config} from 'dotenv'
 import { userController } from './controllers/userController'
 import { cookieController } from './controllers/cookieController'
 import { sessionController } from './controllers/sessionController'
+import cookieParser from "cookie-parser"
 
 
 
@@ -13,6 +14,8 @@ const app = express();
 const PORT = process.env.PORT
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 app.post('/signup', userController.checkUserName, userController.createUser, (req:Request, res: Response,) => {
   res.json('Created User')

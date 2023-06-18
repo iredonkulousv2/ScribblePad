@@ -34,13 +34,13 @@ export function Note({ onDelete }: NoteProps) {
             <Button
               onClick={() => {
                 onDelete(note.id)
-                navigate("/")
+                navigate("/create",)
               }}
               variant="outline-danger"
             >
               Delete
             </Button>
-            <Link to="/">
+            <Link to="/create">
               <Button variant="outline-secondary">Back</Button>
             </Link>
           </Stack>

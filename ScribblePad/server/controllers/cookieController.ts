@@ -7,7 +7,7 @@ type cookieController = {
 export const cookieController: cookieController = {
     createCookie: async (req: Request, res: Response, next: NextFunction) => {
         console.log('inside createcookie middleware')
-        res.cookie('cookie', res.locals.id, {httpOnly:true})
+        res.cookie('SSID', res.locals.id, {httpOnly:true})
         return next()
     }
 }
