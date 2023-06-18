@@ -9,6 +9,8 @@ import { NoteList } from "./NoteList"
 import { NoteLayout } from "./NoteLayout"
 import { Note } from "./Note"
 import { EditNote } from "./EditNote"
+import { Login } from "./Login"
+import {Signup} from "./Signup"
 
 export type Note = {
   id: string
@@ -38,6 +40,8 @@ export type Tag = {
 function App() {
   const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", [])
   const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", [])
+
+  
 
   const notesWithTags = useMemo(() => {
     return notes.map(note => {
@@ -99,6 +103,18 @@ function App() {
       <Routes>
         <Route
           path="/"
+          element={
+          <Login/>
+        }
+        />
+        <Route
+          path="/signup"
+          element={
+          <Signup/>
+        }
+        />
+        <Route
+          path="/create"
           element={
             <NoteList
               notes={notesWithTags}

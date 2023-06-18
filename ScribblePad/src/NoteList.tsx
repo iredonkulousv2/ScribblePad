@@ -9,10 +9,11 @@ import {
   Row,
   Stack,
 } from "react-bootstrap"
-import { Link } from "react-router-dom"
+import { Link, useLocation} from "react-router-dom"
 import ReactSelect from "react-select"
 import { Tag } from "./App"
 import styles from "./NoteList.module.css"
+import axios from 'axios'
 
 type SimplifiedNote = {
   tags: Tag[]
@@ -44,6 +45,11 @@ export function NoteList({
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
   const [title, setTitle] = useState("")
   const [editTagsModalIsOpen, setEditTagsModalIsOpen] = useState(false)
+ 
+
+  // const location = useLocation()
+  // let {username} = location.state
+  // username = username[0].toUpperCase() + username.slice(1)
 
   const filteredNotes = useMemo(() => {
     return notes.filter(note => {
@@ -58,15 +64,18 @@ export function NoteList({
     })
   }, [title, selectedTags, notes])
 
+
+
   return (
     <>
       <Row className="align-items-center mb-4">
         <Col>
-          <h1>Notes</h1>
+        <h1>Welcome {}</h1>
+          <h1>Notes </h1>
         </Col>
         <Col xs="auto">
           <Stack gap={2} direction="horizontal">
-            <Link to="/new">
+            <Link to="/new" >
               <Button variant="primary">Create</Button>
             </Link>
             <Button
@@ -74,6 +83,9 @@ export function NoteList({
               variant="outline-secondary"
             >
               Edit Tags
+            </Button >
+            <Button variant="outline-secondary">
+              Save
             </Button>
           </Stack>
         </Col>
@@ -133,6 +145,7 @@ export function NoteList({
 
 function NoteCard({ id, title, tags }: SimplifiedNote) {
   return (
+    <>
     <Card
       as={Link}
       to={`/${id}`}
@@ -160,6 +173,7 @@ function NoteCard({ id, title, tags }: SimplifiedNote) {
         </Stack>
       </Card.Body>
     </Card>
+    </>
   )
 }
 
