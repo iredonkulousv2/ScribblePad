@@ -17,8 +17,9 @@ export const sessionController = {
 
     isSessionValid: async (req: Request, res: Response, next: NextFunction) => {
         console.log('inside isSessionValid middleware')
+        const {SSID: id} =  req.cookies
         const validSession = await Session.find({
-            cookieId: res.locals.id
+            cookieId: id
         })
         if(!validSession.length){
             return next({

@@ -20,8 +20,9 @@ export function Login(){
           setUser('')
           setPassword('')
           console.log('response data', response.data);
-          if(response.data === 'successful login'){
-            navigate('/create', {state:{username}})
+          const {id} = response.data
+          if(response.data.login === true){
+            navigate('/create', {state:{username,id}})
         }
         })
         .catch(error => {

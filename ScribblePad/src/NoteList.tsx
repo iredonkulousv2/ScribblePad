@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import {
   Badge,
   Button,
@@ -9,7 +9,7 @@ import {
   Row,
   Stack,
 } from "react-bootstrap"
-import { Link, useLocation} from "react-router-dom"
+import { Link, useLocation, useNavigate} from "react-router-dom"
 import ReactSelect from "react-select"
 import { Tag } from "./App"
 import styles from "./NoteList.module.css"
@@ -45,11 +45,36 @@ export function NoteList({
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
   const [title, setTitle] = useState("")
   const [editTagsModalIsOpen, setEditTagsModalIsOpen] = useState(false)
- 
 
-  // const location = useLocation()
-  // let {username} = location.state
-  // username = username[0].toUpperCase() + username.slice(1)
+  const navigate = useNavigate()
+
+  const location = useLocation()
+  //let {username,id} = location.state
+  
+  //const username: any = location.state.username || "user"
+  const [username,setUsername] = useState('')
+  
+  useEffect(() => {
+    console.log('inside useEffect validsession')
+    axios.get('/api/validSession' )
+    .then(response => {
+      console.log(response.data)
+      if(response.data !== 'Valid Session'){
+        navigate('/')
+      }
+    })
+  },[])
+
+  useEffect(() => {
+    console.log('inside getUsername')
+    axios.get('/api/getUser')
+    .then(response => {
+      console.log(response.data)
+      setUsername(response.data)
+
+    })
+  },[])
+ 
 
   const filteredNotes = useMemo(() => {
     return notes.filter(note => {
@@ -64,16 +89,27 @@ export function NoteList({
     })
   }, [title, selectedTags, notes])
 
+  const logout = () => {
+    axios.get('/api/logout')
+      .then(response => {
+        console.log(response.data)
+        navigate('/')
+      })
+  }
+
+
+
 
 
   return (
     <>
       <Row className="align-items-center mb-4">
         <Col>
-        <h1>Welcome {}</h1>
+        <h1>Welcome {username}</h1>
           <h1>Notes </h1>
         </Col>
         <Col xs="auto">
+
           <Stack gap={2} direction="horizontal">
             <Link to="/new" >
               <Button variant="primary">Create</Button>
@@ -87,7 +123,11 @@ export function NoteList({
             <Button variant="outline-secondary">
               Save
             </Button>
+            <Button variant="outline-secondary" onClick={logout}>
+              Log Out
+            </Button>
           </Stack>
+
         </Col>
       </Row>
       <Form>

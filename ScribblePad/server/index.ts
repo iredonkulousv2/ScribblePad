@@ -5,8 +5,7 @@ import { userController } from './controllers/userController'
 import { cookieController } from './controllers/cookieController'
 import { sessionController } from './controllers/sessionController'
 import cookieParser from "cookie-parser"
-
-
+import cors from "cors"
 
 config()
 
@@ -16,16 +15,35 @@ const PORT = process.env.PORT
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
+app.use(cors({
+  origin: ["http://localhost:3000"],
+  methods: ["GET", "POST"],
+  credentials: true
+}))
 
 app.post('/signup', userController.checkUserName, userController.createUser, (req:Request, res: Response,) => {
   res.json('Created User')
 })
 
-app.post('/login', userController.findAllUser, cookieController.createCookie, sessionController.createSession, sessionController.isSessionValid, 
+app.post('/login', userController.findAllUser, cookieController.createCookie, sessionController.createSession, 
 (req: Request, res: Response) => {
-  res.json('successful login')
+  res.json({
+    login: true,
+    id: res.locals.id})
 
 })
+
+app.get('/validSession', sessionController.isSessionValid, (req: Request, res: Response) => {
+  res.json('Valid Session')
+})
+
+app.get('/logout', userController.logOut, (req: Request, res: Response) => {
+  res.json('Logged Out')
+})
+
+app.get('/getUser', userController.getUserName, (req: Request, res: Response) => {
+  res.json(res.locals.username)
+} )
 
 app.get('/', (req: Request,res: Response) => {
   res.json('Hello World')
