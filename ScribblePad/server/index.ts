@@ -4,6 +4,7 @@ import {config} from 'dotenv'
 import { userController } from './controllers/userController'
 import { cookieController } from './controllers/cookieController'
 import { sessionController } from './controllers/sessionController'
+import { noteController } from './controllers/noteController'
 import cookieParser from "cookie-parser"
 import cors from "cors"
 
@@ -33,21 +34,28 @@ app.post('/login', userController.findAllUser, cookieController.createCookie, se
 
 })
 
-app.get('/validSession', sessionController.isSessionValid, (req: Request, res: Response) => {
-  res.json('Valid Session')
+app.get('/validSession', sessionController.isSessionValid, userController.getUserName, (req: Request, res: Response) => {
+  res.json(res.locals)
 })
 
 app.get('/logout', userController.logOut, (req: Request, res: Response) => {
   res.json('Logged Out')
 })
 
-app.get('/getUser', userController.getUserName, (req: Request, res: Response) => {
-  res.json(res.locals.username)
-} )
-
-app.get('/', (req: Request,res: Response) => {
-  res.json('Hello World')
+app.post('/addNote', noteController.addNote,(req: Request,res: Response) => {
+  res.json('Adding Note')
 })
+
+app.post('/deleteNote', noteController.deleteNote,(req: Request,res: Response) => {
+  res.json('Deleting Note')
+})
+
+app.post('/editNote', noteController.editNote,(req: Request,res: Response) => {
+  res.json('Editing Note')
+})
+
+
+
 
 //const db = mongoose.connect('mongodb+srv://philip14633:philip14633@cluster0.xeien5n.mongodb.net/?retryWrites=true&w=majority')
 

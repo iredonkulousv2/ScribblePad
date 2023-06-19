@@ -28,7 +28,7 @@ export const userController: UserController = {
 
         bycrypt.hash(password,saltRounds, async (err,hash) => {
         const newUser = new User({username,password: hash})
-        const createdUser = await newUser.save()
+        await newUser.save()
         next()
         })
       
@@ -83,11 +83,12 @@ export const userController: UserController = {
         console.log('inside getUserName middleware')
         const {SSID: id} = req.cookies
         
-        console.log(id)
+        //console.log(id)
         const user: any = await User.findOne({_id: id})
         
-        console.log('user',user)
+        //console.log('user',user)
         res.locals.username = user.username
+        
         return next()
     },
 

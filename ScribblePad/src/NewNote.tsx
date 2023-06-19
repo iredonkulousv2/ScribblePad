@@ -16,7 +16,7 @@ export function NewNote({ onSubmit, onAddTag, availableTags }: NewNoteProps) {
         onSubmit={onSubmit}
         onAddTag={onAddTag}
         availableTags={availableTags}
-        
+        edit={false}
       />
     </>
   )

@@ -48,32 +48,21 @@ export function NoteList({
 
   const navigate = useNavigate()
 
-  const location = useLocation()
-  //let {username,id} = location.state
-  
-  //const username: any = location.state.username || "user"
   const [username,setUsername] = useState('')
   
   useEffect(() => {
-    console.log('inside useEffect validsession')
+
     axios.get('/api/validSession' )
     .then(response => {
-      console.log(response.data)
-      if(response.data !== 'Valid Session'){
+      if(response.data.validSession !== true){
         navigate('/')
+      } else {
+        setUsername(response.data.username)
       }
     })
   },[])
 
-  useEffect(() => {
-    console.log('inside getUsername')
-    axios.get('/api/getUser')
-    .then(response => {
-      console.log(response.data)
-      setUsername(response.data)
-
-    })
-  },[])
+ 
  
 
   const filteredNotes = useMemo(() => {
@@ -92,14 +81,9 @@ export function NoteList({
   const logout = () => {
     axios.get('/api/logout')
       .then(response => {
-        console.log(response.data)
         navigate('/')
       })
   }
-
-
-
-
 
   return (
     <>
@@ -120,9 +104,6 @@ export function NoteList({
             >
               Edit Tags
             </Button >
-            <Button variant="outline-secondary">
-              Save
-            </Button>
             <Button variant="outline-secondary" onClick={logout}>
               Log Out
             </Button>

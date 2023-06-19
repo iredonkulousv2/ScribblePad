@@ -27,6 +27,7 @@ export const sessionController = {
             })
         }
 
+        res.locals.validSession = true
         return next()
 
     }

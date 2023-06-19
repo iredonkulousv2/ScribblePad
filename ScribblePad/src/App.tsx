@@ -11,6 +11,7 @@ import { Note } from "./Note"
 import { EditNote } from "./EditNote"
 import { Login } from "./Login"
 import {Signup} from "./Signup"
+import axios from "axios"
 
 export type Note = {
   id: string
@@ -49,16 +50,18 @@ function App() {
     })
   }, [notes, tags])
 
-  function onCreateNote({ tags, ...data }: NoteData) {
+  function onCreateNote({ tags, ...data }: NoteData,) {
     setNotes(prevNotes => {
       return [
         ...prevNotes,
         { ...data, id: uuidV4(), tagIds: tags.map(tag => tag.id) },
       ]
     })
+
+    
   }
 
-  function onUpdateNote(id: string, { tags, ...data }: NoteData) {
+  function onUpdateNote(id: string, { tags, ...data }: NoteData, title: string) {
     setNotes(prevNotes => {
       return prevNotes.map(note => {
         if (note.id === id) {
@@ -68,12 +71,23 @@ function App() {
         }
       })
     })
+
+    axios.post('/api/editNote', {title, data})
+    .then(response => {
+      console.log(response.data)
+    })
   }
 
-  function onDeleteNote(id: string) {
+  function onDeleteNote(id: string, title: string) {
     setNotes(prevNotes => {
       return prevNotes.filter(note => note.id !== id)
     })
+
+    axios.post('/api/deleteNote', {title})
+    .then(response => {
+      console.log(response.data)
+    })
+
   }
 
   function addTag(tag: Tag) {

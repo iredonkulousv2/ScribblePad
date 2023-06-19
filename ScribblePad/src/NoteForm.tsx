@@ -10,6 +10,7 @@ type NoteFormProps = {
   onSubmit: (data: NoteData) => void
   onAddTag: (tag: Tag) => void
   availableTags: Tag[]
+  edit: boolean
 } & Partial<NoteData>
 
 export function NoteForm({
@@ -19,6 +20,7 @@ export function NoteForm({
   title = "",
   markdown = "",
   tags = [],
+  edit = false
 }: NoteFormProps) {
   const titleRef = useRef<HTMLInputElement>(null)
   const markdownRef = useRef<HTMLTextAreaElement>(null)
@@ -28,18 +30,16 @@ export function NoteForm({
 
 
   useEffect(() => {
-    console.log('inside useEffect validsession')
     axios.get('/api/validSession' )
     .then(response => {
-      console.log(response.data)
-      if(response.data !== 'Valid Session'){
+      if(response.data.validSession !== true){
         navigate('/')
       }
     })
   },[])
   
 
-  function handleSubmit(e: FormEvent) {
+  function handleSubmit(e: FormEvent, edit:boolean = false) {
     e.preventDefault()
 
     onSubmit({
@@ -48,12 +48,22 @@ export function NoteForm({
       tags: selectedTags,
     })
 
+    if(edit === false){
 
+    axios.post('/api/addNote', {
+      title: titleRef.current!.value,
+      markdown: markdownRef.current!.value,
+      tags: selectedTags,
+    }).then(response => {
+      console.log(response.data)
+    })
+  }
+  
     navigate("/create",)
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={(e) => handleSubmit(e,edit)}>
       <Stack gap={4}>
         <Row>
           <Col>
