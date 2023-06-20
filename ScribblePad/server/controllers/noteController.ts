@@ -36,7 +36,6 @@ export const noteController: noteController = {
         }  )
 
 
-        //console.log('arrayofTags',arrayofTags)
         const newNote = new Note({
             title,markdown,
             userId: SSID,
@@ -50,9 +49,6 @@ export const noteController: noteController = {
         console.log('inside deleteNote MiddleWare')
         const {title} = req.body
         const {SSID: userId} = req.cookies
-
-        // console.log('title',title)
-        // console.log('userId',userId)
         await Note.findOneAndDelete({title,userId})
         return next()
     },
@@ -60,10 +56,9 @@ export const noteController: noteController = {
     editNote: async (req: Request, res: Response, next: NextFunction) => {
         console.log('inside editNote MiddleWare')
         //console.log('body',req.body)
-        const {title,markdown} = req.body.data
+        const {title,markdown} = req.body
         const {tags} = req.body
         const {SSID: userId} = req.cookies
-        //console.log('data', req.body.data)
         await Note.findOneAndUpdate({title,userId},{markdown,tags})
 
         return next()
