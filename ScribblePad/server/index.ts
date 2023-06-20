@@ -59,7 +59,6 @@ app.get('/getAllNotes', noteController.getAllNotes ,(req: Request,res: Response)
 })
 
 
-//const db = mongoose.connect('mongodb+srv://philip14633:philip14633@cluster0.xeien5n.mongodb.net/?retryWrites=true&w=majority')
 
 app.use('*', (req,res) => {
   res.status(404).send('Not Found');

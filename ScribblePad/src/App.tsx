@@ -4,7 +4,6 @@ import { Container } from "react-bootstrap"
 import { Routes, Route, Navigate } from "react-router-dom"
 import { NewNote } from "./NewNote"
 import { useLocalStorage } from "./useLocalStorage"
-import { v4 as uuidV4 } from "uuid"
 import { NoteList } from "./NoteList"
 import { NoteLayout } from "./NoteLayout"
 import { Note } from "./Note"
@@ -31,7 +30,7 @@ export type NoteData = {
   title: string
   markdown: string
   tags: Tag[]
-  id: string
+  _id: string
 }
 
 export type Tag = {
@@ -40,47 +39,14 @@ export type Tag = {
 }
 
 function App() {
-  //const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", [])
+ 
   const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", [])
 
   const [retrievedNotes,setRetrievedNotes] = useState([])
 
-  console.log('retrievedNotes',retrievedNotes)
-
-  // const notesWithTags = useMemo(() => {
-  //   return notes.map(note => {
-  //     return { ...note, tags: tags.filter(tag => note.tagIds.includes(tag.id)) }
-  //   })
-  // }, [notes, tags])
-
-  function onCreateNote({ tags, ...data }: NoteData,) {
-    // setNotes(prevNotes => {
-    //   return [
-    //     ...prevNotes,
-    //     { ...data,  tagIds: tags.map(tag => tag.id) },
-    //   ]
-    // })
-  }
-
-  function onUpdateNote(id: string, { tags, ...data }: NoteData) {
-    // setNotes(prevNotes => {
-    //   return prevNotes.map(note => {
-    //     if (note.id === id) {
-    //       return { ...note, ...data, tagIds: tags.map(tag => tag.id) }
-    //     } else {
-    //       return note
-    //     }
-    //   })
-    // })
-
-   
-  }
 
   function onDeleteNote(id: string, title: string) {
-    // setNotes(prevNotes => {
-    //   return prevNotes.filter(note => note.id !== id)
-    // })
-
+ 
     axios.post('/api/deleteNote', {title})
     .then(response => {
       console.log(response.data)
@@ -129,7 +95,6 @@ function App() {
           path="/create"
           element={
             <NoteList
-              //notes={notesWithTags}
               availableTags={tags}
               onUpdateTag={updateTag}
               onDeleteTag={deleteTag}
@@ -142,7 +107,6 @@ function App() {
           path="/new"
           element={
             <NewNote
-              onSubmit={onCreateNote}
               onAddTag={addTag}
               availableTags={tags}
             />
@@ -155,7 +119,6 @@ function App() {
             path="edit"
             element={
               <EditNote
-                onSubmit={onUpdateNote}
                 onAddTag={addTag}
                 availableTags={tags}
               />
