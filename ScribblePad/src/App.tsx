@@ -31,6 +31,7 @@ export type NoteData = {
   title: string
   markdown: string
   tags: Tag[]
+  id: string
 }
 
 export type Tag = {
@@ -39,49 +40,46 @@ export type Tag = {
 }
 
 function App() {
-  const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", [])
+  //const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", [])
   const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", [])
 
   const [retrievedNotes,setRetrievedNotes] = useState([])
 
   console.log('retrievedNotes',retrievedNotes)
 
-  const notesWithTags = useMemo(() => {
-    return notes.map(note => {
-      return { ...note, tags: tags.filter(tag => note.tagIds.includes(tag.id)) }
-    })
-  }, [notes, tags])
+  // const notesWithTags = useMemo(() => {
+  //   return notes.map(note => {
+  //     return { ...note, tags: tags.filter(tag => note.tagIds.includes(tag.id)) }
+  //   })
+  // }, [notes, tags])
 
   function onCreateNote({ tags, ...data }: NoteData,) {
-    setNotes(prevNotes => {
-      return [
-        ...prevNotes,
-        { ...data, id: uuidV4(), tagIds: tags.map(tag => tag.id) },
-      ]
-    })
+    // setNotes(prevNotes => {
+    //   return [
+    //     ...prevNotes,
+    //     { ...data,  tagIds: tags.map(tag => tag.id) },
+    //   ]
+    // })
   }
 
   function onUpdateNote(id: string, { tags, ...data }: NoteData) {
-    setNotes(prevNotes => {
-      return prevNotes.map(note => {
-        if (note.id === id) {
-          return { ...note, ...data, tagIds: tags.map(tag => tag.id) }
-        } else {
-          return note
-        }
-      })
-    })
+    // setNotes(prevNotes => {
+    //   return prevNotes.map(note => {
+    //     if (note.id === id) {
+    //       return { ...note, ...data, tagIds: tags.map(tag => tag.id) }
+    //     } else {
+    //       return note
+    //     }
+    //   })
+    // })
 
-    axios.post('/api/editNote', {data, tags})
-    .then(response => {
-      console.log(response.data)
-    })
+   
   }
 
   function onDeleteNote(id: string, title: string) {
-    setNotes(prevNotes => {
-      return prevNotes.filter(note => note.id !== id)
-    })
+    // setNotes(prevNotes => {
+    //   return prevNotes.filter(note => note.id !== id)
+    // })
 
     axios.post('/api/deleteNote', {title})
     .then(response => {
@@ -131,7 +129,7 @@ function App() {
           path="/create"
           element={
             <NoteList
-              notes={notesWithTags}
+              //notes={notesWithTags}
               availableTags={tags}
               onUpdateTag={updateTag}
               onDeleteTag={deleteTag}
@@ -151,7 +149,7 @@ function App() {
           }
         />
 
-        <Route path="/:id" element={<NoteLayout notes={notesWithTags} />}>
+        <Route path="/:id" element={<NoteLayout notes={retrievedNotes} />}>
           <Route index element={<Note onDelete={onDeleteNote} />} />
           <Route
             path="edit"

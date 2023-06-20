@@ -20,7 +20,7 @@ export function NoteForm({
   title = "",
   markdown = "",
   tags = [],
-  edit = false
+  edit
 }: NoteFormProps) {
   const titleRef = useRef<HTMLInputElement>(null)
   const markdownRef = useRef<HTMLTextAreaElement>(null)
@@ -42,11 +42,11 @@ export function NoteForm({
   function handleSubmit(e: FormEvent, edit:boolean = false) {
     e.preventDefault()
 
-    onSubmit({
-      title: titleRef.current!.value,
-      markdown: markdownRef.current!.value,
-      tags: selectedTags,
-    })
+    // onSubmit({
+    //   title: titleRef.current!.value,
+    //   markdown: markdownRef.current!.value,
+    //   tags: selectedTags,
+    // })
 
     if(edit === false){
 
@@ -56,7 +56,28 @@ export function NoteForm({
       tags: selectedTags,
     }).then(response => {
       console.log(response.data)
+      // onSubmit({
+      //   title: titleRef.current!.value,
+      //   markdown: markdownRef.current!.value,
+      //   tags: selectedTags,
+      //   id: response.data._id
+      // })
     })
+  } else {
+    axios.post('/api/editNote', {
+      title: titleRef.current!.value,
+      markdown: markdownRef.current!.value,
+      tags: selectedTags,
+    }).then(response => {
+      console.log(response.data)
+      // onSubmit({
+      //   title: titleRef.current!.value,
+      //   markdown: markdownRef.current!.value,
+      //   tags: selectedTags,
+      //   id: response.data._id
+      // })
+    })
+
   }
   
     navigate("/create",)
