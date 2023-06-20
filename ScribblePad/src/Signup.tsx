@@ -1,4 +1,4 @@
-import { Form, Button } from "react-bootstrap"
+import { Form, Button, FloatingLabel } from "react-bootstrap"
 import {FormEvent, useState,} from 'react'
 import {useNavigate } from "react-router-dom"
 import axios from "axios";
@@ -31,18 +31,17 @@ export function Signup(){
     <Form onSubmit={signupHandler}>
       <Form.Group className="mb-3" controlId="formBasicUser">
         <h1>Create An User</h1>
-        <Form.Label>Username</Form.Label>
-        <Form.Control type="text" placeholder="Enter Username" 
-        value={username}
-        onChange={e => 
-            setUser(e.target.value)} />
+        <Form.Group className="mb-3" controlId="formBasicUser">
+        <FloatingLabel controlId="floatingInput" label="Username"className="mb-3">
+        <Form.Control type="text" placeholder="Enter Username" value={username} onChange={e => setUser(e.target.value)} />
+        </FloatingLabel>
+      </Form.Group>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formBasicPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" 
-        value={password}
-        onChange={e => setPassword(e.target.value)}/>
+      <FloatingLabel controlId="floatingInput" label="Password"className="mb-3">
+        <Form.Control type="text" placeholder="Enter Password" value={password} onChange={e => setPassword(e.target.value)} />
+        </FloatingLabel>
       </Form.Group>
 
     

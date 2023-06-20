@@ -14,7 +14,7 @@ import ReactSelect from "react-select"
 import { Tag, NoteData } from "./App"
 import styles from "./NoteList.module.css"
 import axios from 'axios'
-import { v4 as uuidV4 } from "uuid"
+
 
 type SimplifiedNote = {
   tags: Tag[]
@@ -31,7 +31,7 @@ type NoteListProps = {
   notes: SimplifiedNote[]
   onDeleteTag: (id: string) => void
   onUpdateTag: (id: string, label: string) => void
-  setRetrievedNotes: (notes: RetrievedNote) => void
+  setRetrievedNotes: (notes: RetrievedNote[]) => void
   retrievedNotes: RetrievedNote[]
 }
 
@@ -82,21 +82,19 @@ export function NoteList({
     })
   },[])
 
- 
- 
 
-  // const filteredNotes = useMemo(() => {
-  //   return notes.filter(note => {
-  //     return (
-  //       (title === "" ||
-  //         note.title.toLowerCase().includes(title.toLowerCase())) &&
-  //       (selectedTags.length === 0 ||
-  //         selectedTags.every(tag =>
-  //           note.tags.some(noteTag => noteTag.id === tag.id)
-  //         ))
-  //     )
-  //   })
-  // }, [title, selectedTags, notes])
+  const filteredNotes = useMemo(() => {
+    return retrievedNotes.filter(note => {
+      return (
+        (title === "" ||
+          note.title.toLowerCase().includes(title.toLowerCase())) &&
+        (selectedTags.length === 0 ||
+          selectedTags.every(tag =>
+            note.tags.some(noteTag => noteTag.id === tag.id)
+          ))
+      )
+    })
+  }, [title, selectedTags, retrievedNotes])
 
  
   const logout = () => {
@@ -169,12 +167,8 @@ export function NoteList({
         </Row>
       </Form>
       <Row xs={1} sm={2} lg={3} xl={4} className="g-3">
-        {/* {filteredNotes.map(note => (
-          <Col key={note.id}>
-            <NoteCard id={note.id} title={note.title} tags={note.tags} />
-          </Col>
-        ))} */}
-         {retrievedNotes.map(note => (
+       
+        {filteredNotes.map(note => (
           <Col key={note._id}>
             <NoteCard id={note._id} title={note.title} tags={note.tags} />
           </Col>
@@ -192,7 +186,7 @@ export function NoteList({
 }
 
 function NoteCard({ id, title, tags }: SimplifiedNote) {
-  //console.log('NoteCard id', id)
+ 
   return (
     <>
     <Card

@@ -7,14 +7,12 @@ import { v4 as uuidV4 } from "uuid"
 import axios from 'axios'
 
 type NoteFormProps = {
-  onSubmit: (data: NoteData) => void
   onAddTag: (tag: Tag) => void
   availableTags: Tag[]
   edit: boolean
 } & Partial<NoteData>
 
 export function NoteForm({
-  onSubmit,
   onAddTag,
   availableTags,
   title = "",
@@ -42,12 +40,6 @@ export function NoteForm({
   function handleSubmit(e: FormEvent, edit:boolean = false) {
     e.preventDefault()
 
-    // onSubmit({
-    //   title: titleRef.current!.value,
-    //   markdown: markdownRef.current!.value,
-    //   tags: selectedTags,
-    // })
-
     if(edit === false){
 
     axios.post('/api/addNote', {
@@ -56,12 +48,6 @@ export function NoteForm({
       tags: selectedTags,
     }).then(response => {
       console.log(response.data)
-      // onSubmit({
-      //   title: titleRef.current!.value,
-      //   markdown: markdownRef.current!.value,
-      //   tags: selectedTags,
-      //   id: response.data._id
-      // })
     })
   } else {
     axios.post('/api/editNote', {
@@ -70,16 +56,9 @@ export function NoteForm({
       tags: selectedTags,
     }).then(response => {
       console.log(response.data)
-      // onSubmit({
-      //   title: titleRef.current!.value,
-      //   markdown: markdownRef.current!.value,
-      //   tags: selectedTags,
-      //   id: response.data._id
-      // })
     })
 
   }
-  
     navigate("/create",)
   }
 
