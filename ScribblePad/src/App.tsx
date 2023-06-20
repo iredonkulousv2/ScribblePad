@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { Container } from "react-bootstrap"
 import { Routes, Route, Navigate } from "react-router-dom"
 import { NewNote } from "./NewNote"
@@ -11,6 +11,7 @@ import { Note } from "./Note"
 import { EditNote } from "./EditNote"
 import { Login } from "./Login"
 import {Signup} from "./Signup"
+import axios from "axios"
 
 export type Note = {
   id: string
@@ -41,7 +42,9 @@ function App() {
   const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", [])
   const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", [])
 
-  
+  const [retrievedNotes,setRetrievedNotes] = useState([])
+
+  console.log('retrievedNotes',retrievedNotes)
 
   const notesWithTags = useMemo(() => {
     return notes.map(note => {
@@ -49,7 +52,7 @@ function App() {
     })
   }, [notes, tags])
 
-  function onCreateNote({ tags, ...data }: NoteData) {
+  function onCreateNote({ tags, ...data }: NoteData,) {
     setNotes(prevNotes => {
       return [
         ...prevNotes,
@@ -68,12 +71,23 @@ function App() {
         }
       })
     })
+
+    axios.post('/api/editNote', {data, tags})
+    .then(response => {
+      console.log(response.data)
+    })
   }
 
-  function onDeleteNote(id: string) {
+  function onDeleteNote(id: string, title: string) {
     setNotes(prevNotes => {
       return prevNotes.filter(note => note.id !== id)
     })
+
+    axios.post('/api/deleteNote', {title})
+    .then(response => {
+      console.log(response.data)
+    })
+
   }
 
   function addTag(tag: Tag) {
@@ -121,6 +135,8 @@ function App() {
               availableTags={tags}
               onUpdateTag={updateTag}
               onDeleteTag={deleteTag}
+              retrievedNotes={retrievedNotes}
+              setRetrievedNotes={setRetrievedNotes}
             />
           }
         />
@@ -134,6 +150,7 @@ function App() {
             />
           }
         />
+
         <Route path="/:id" element={<NoteLayout notes={notesWithTags} />}>
           <Route index element={<Note onDelete={onDeleteNote} />} />
           <Route
@@ -147,6 +164,7 @@ function App() {
             }
           />
         </Route>
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Container>

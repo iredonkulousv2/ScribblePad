@@ -1,14 +1,16 @@
-import { FormEvent, useRef, useState } from "react"
+import { FormEvent, useEffect, useRef, useState } from "react"
 import { Button, Col, Form, Row, Stack } from "react-bootstrap"
 import { Link, useNavigate } from "react-router-dom"
 import CreatableReactSelect from "react-select/creatable"
 import { NoteData, Tag } from "./App"
 import { v4 as uuidV4 } from "uuid"
+import axios from 'axios'
 
 type NoteFormProps = {
   onSubmit: (data: NoteData) => void
   onAddTag: (tag: Tag) => void
   availableTags: Tag[]
+  edit: boolean
 } & Partial<NoteData>
 
 export function NoteForm({
@@ -18,14 +20,26 @@ export function NoteForm({
   title = "",
   markdown = "",
   tags = [],
+  edit = false
 }: NoteFormProps) {
   const titleRef = useRef<HTMLInputElement>(null)
   const markdownRef = useRef<HTMLTextAreaElement>(null)
   const [selectedTags, setSelectedTags] = useState<Tag[]>(tags)
   const navigate = useNavigate()
+
+
+
+  useEffect(() => {
+    axios.get('/api/validSession' )
+    .then(response => {
+      if(response.data.validSession !== true){
+        navigate('/')
+      }
+    })
+  },[])
   
 
-  function handleSubmit(e: FormEvent) {
+  function handleSubmit(e: FormEvent, edit:boolean = false) {
     e.preventDefault()
 
     onSubmit({
@@ -34,12 +48,22 @@ export function NoteForm({
       tags: selectedTags,
     })
 
+    if(edit === false){
 
+    axios.post('/api/addNote', {
+      title: titleRef.current!.value,
+      markdown: markdownRef.current!.value,
+      tags: selectedTags,
+    }).then(response => {
+      console.log(response.data)
+    })
+  }
+  
     navigate("/create",)
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={(e) => handleSubmit(e,edit)}>
       <Stack gap={4}>
         <Row>
           <Col>
@@ -89,7 +113,7 @@ export function NoteForm({
           <Button type="submit" variant="primary">
             Save
           </Button>
-          <Link to="..">
+          <Link to="/create">
             <Button type="button" variant="outline-secondary">
               Cancel
             </Button>

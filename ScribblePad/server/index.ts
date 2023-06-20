@@ -4,9 +4,9 @@ import {config} from 'dotenv'
 import { userController } from './controllers/userController'
 import { cookieController } from './controllers/cookieController'
 import { sessionController } from './controllers/sessionController'
+import { noteController } from './controllers/noteController'
 import cookieParser from "cookie-parser"
-
-
+import cors from "cors"
 
 config()
 
@@ -16,20 +16,48 @@ const PORT = process.env.PORT
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
+app.use(cors({
+  origin: ["http://localhost:3000"],
+  methods: ["GET", "POST"],
+  credentials: true
+}))
 
 app.post('/signup', userController.checkUserName, userController.createUser, (req:Request, res: Response,) => {
   res.json('Created User')
 })
 
-app.post('/login', userController.findAllUser, cookieController.createCookie, sessionController.createSession, sessionController.isSessionValid, 
+app.post('/login', userController.findAllUser, cookieController.createCookie, sessionController.createSession, 
 (req: Request, res: Response) => {
-  res.json('successful login')
+  res.json({
+    login: true,
+    id: res.locals.id})
 
 })
 
-app.get('/', (req: Request,res: Response) => {
-  res.json('Hello World')
+app.get('/validSession', sessionController.isSessionValid, userController.getUserName, (req: Request, res: Response) => {
+  res.json(res.locals)
 })
+
+app.get('/logout', userController.logOut, (req: Request, res: Response) => {
+  res.json('Logged Out')
+})
+
+app.post('/addNote', noteController.addNote,(req: Request,res: Response) => {
+  res.json('Adding Note')
+})
+
+app.post('/deleteNote', noteController.deleteNote,(req: Request,res: Response) => {
+  res.json('Deleting Note')
+})
+
+app.post('/editNote', noteController.editNote,(req: Request,res: Response) => {
+  res.json('Editing Note')
+})
+
+app.get('/getAllNotes', noteController.getAllNotes ,(req: Request,res: Response) => {
+  res.json(res.locals.allNotes)
+})
+
 
 //const db = mongoose.connect('mongodb+srv://philip14633:philip14633@cluster0.xeien5n.mongodb.net/?retryWrites=true&w=majority')
 
@@ -40,8 +68,6 @@ app.use('*', (req,res) => {
 app.use((err:ErrorRequestHandler, req : Request, res: Response, next: NextFunction) => {
   res.json(err)
 });
-
-
 
 mongoose.connect(process.env.MONGO_URL!)
 .then(() => {

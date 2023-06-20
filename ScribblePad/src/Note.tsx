@@ -4,7 +4,7 @@ import { useNote } from "./NoteLayout"
 import ReactMarkdown from "react-markdown"
 
 type NoteProps = {
-  onDelete: (id: string) => void
+  onDelete: (id: string, title: string) => void
 }
 
 export function Note({ onDelete }: NoteProps) {
@@ -33,7 +33,7 @@ export function Note({ onDelete }: NoteProps) {
             </Link>
             <Button
               onClick={() => {
-                onDelete(note.id)
+                onDelete(note.id,note.title)
                 navigate("/create",)
               }}
               variant="outline-danger"

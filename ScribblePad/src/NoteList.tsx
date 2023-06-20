@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import {
   Badge,
   Button,
@@ -9,11 +9,12 @@ import {
   Row,
   Stack,
 } from "react-bootstrap"
-import { Link, useLocation} from "react-router-dom"
+import { Link, useNavigate} from "react-router-dom"
 import ReactSelect from "react-select"
-import { Tag } from "./App"
+import { Tag, NoteData } from "./App"
 import styles from "./NoteList.module.css"
 import axios from 'axios'
+import { v4 as uuidV4 } from "uuid"
 
 type SimplifiedNote = {
   tags: Tag[]
@@ -21,11 +22,17 @@ type SimplifiedNote = {
   id: string
 }
 
+type RetrievedNote = {
+  userId: String
+} & NoteData
+
 type NoteListProps = {
   availableTags: Tag[]
   notes: SimplifiedNote[]
   onDeleteTag: (id: string) => void
   onUpdateTag: (id: string, label: string) => void
+  setRetrievedNotes: (notes: RetrievedNote) => void
+  retrievedNotes: RetrievedNote[]
 }
 
 type EditTagsModalProps = {
@@ -41,15 +48,42 @@ export function NoteList({
   notes,
   onUpdateTag,
   onDeleteTag,
+  setRetrievedNotes,
+  retrievedNotes
 }: NoteListProps) {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
   const [title, setTitle] = useState("")
   const [editTagsModalIsOpen, setEditTagsModalIsOpen] = useState(false)
- 
 
-  // const location = useLocation()
-  // let {username} = location.state
-  // username = username[0].toUpperCase() + username.slice(1)
+
+  const navigate = useNavigate()
+
+  const [username,setUsername] = useState('')
+
+ 
+  
+  useEffect(() => {
+
+    axios.get('/api/validSession' )
+    .then(response => {
+      if(response.data.validSession !== true){
+        navigate('/')
+      } else {
+        setUsername(response.data.username)
+      }
+    })
+  },[])
+
+  
+  useEffect(() => {
+    axios.get('/api/getAllNotes')
+    .then(response => {
+      setRetrievedNotes(response.data)
+    })
+  },[])
+
+ 
+ 
 
   const filteredNotes = useMemo(() => {
     return notes.filter(note => {
@@ -64,16 +98,24 @@ export function NoteList({
     })
   }, [title, selectedTags, notes])
 
+ 
+  const logout = () => {
+    axios.get('/api/logout')
+      .then(response => {
+        navigate('/')
+      })
+  }
 
-
+ 
   return (
     <>
       <Row className="align-items-center mb-4">
         <Col>
-        <h1>Welcome {}</h1>
+        <h1>Welcome {username}</h1>
           <h1>Notes </h1>
         </Col>
         <Col xs="auto">
+
           <Stack gap={2} direction="horizontal">
             <Link to="/new" >
               <Button variant="primary">Create</Button>
@@ -84,10 +126,11 @@ export function NoteList({
             >
               Edit Tags
             </Button >
-            <Button variant="outline-secondary">
-              Save
+            <Button variant="outline-secondary" onClick={logout}>
+              Log Out
             </Button>
           </Stack>
+
         </Col>
       </Row>
       <Form>
@@ -126,9 +169,14 @@ export function NoteList({
         </Row>
       </Form>
       <Row xs={1} sm={2} lg={3} xl={4} className="g-3">
-        {filteredNotes.map(note => (
+        {/* {filteredNotes.map(note => (
           <Col key={note.id}>
             <NoteCard id={note.id} title={note.title} tags={note.tags} />
+          </Col>
+        ))} */}
+         {retrievedNotes.map(note => (
+          <Col key={note._id}>
+            <NoteCard id={note._id} title={note.title} tags={note.tags} />
           </Col>
         ))}
       </Row>
@@ -144,6 +192,7 @@ export function NoteList({
 }
 
 function NoteCard({ id, title, tags }: SimplifiedNote) {
+  //console.log('NoteCard id', id)
   return (
     <>
     <Card
