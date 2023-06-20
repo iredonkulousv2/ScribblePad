@@ -9,11 +9,12 @@ import {
   Row,
   Stack,
 } from "react-bootstrap"
-import { Link, useLocation, useNavigate} from "react-router-dom"
+import { Link, useNavigate} from "react-router-dom"
 import ReactSelect from "react-select"
-import { Tag } from "./App"
+import { Tag, NoteData } from "./App"
 import styles from "./NoteList.module.css"
 import axios from 'axios'
+import { v4 as uuidV4 } from "uuid"
 
 type SimplifiedNote = {
   tags: Tag[]
@@ -21,11 +22,17 @@ type SimplifiedNote = {
   id: string
 }
 
+type RetrievedNote = {
+  userId: String
+} & NoteData
+
 type NoteListProps = {
   availableTags: Tag[]
   notes: SimplifiedNote[]
   onDeleteTag: (id: string) => void
   onUpdateTag: (id: string, label: string) => void
+  setRetrievedNotes: (notes: RetrievedNote) => void
+  retrievedNotes: RetrievedNote[]
 }
 
 type EditTagsModalProps = {
@@ -41,14 +48,19 @@ export function NoteList({
   notes,
   onUpdateTag,
   onDeleteTag,
+  setRetrievedNotes,
+  retrievedNotes
 }: NoteListProps) {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
   const [title, setTitle] = useState("")
   const [editTagsModalIsOpen, setEditTagsModalIsOpen] = useState(false)
 
+
   const navigate = useNavigate()
 
   const [username,setUsername] = useState('')
+
+ 
   
   useEffect(() => {
 
@@ -59,6 +71,14 @@ export function NoteList({
       } else {
         setUsername(response.data.username)
       }
+    })
+  },[])
+
+  
+  useEffect(() => {
+    axios.get('/api/getAllNotes')
+    .then(response => {
+      setRetrievedNotes(response.data)
     })
   },[])
 
@@ -78,6 +98,7 @@ export function NoteList({
     })
   }, [title, selectedTags, notes])
 
+ 
   const logout = () => {
     axios.get('/api/logout')
       .then(response => {
@@ -85,6 +106,7 @@ export function NoteList({
       })
   }
 
+ 
   return (
     <>
       <Row className="align-items-center mb-4">
@@ -147,9 +169,14 @@ export function NoteList({
         </Row>
       </Form>
       <Row xs={1} sm={2} lg={3} xl={4} className="g-3">
-        {filteredNotes.map(note => (
+        {/* {filteredNotes.map(note => (
           <Col key={note.id}>
             <NoteCard id={note.id} title={note.title} tags={note.tags} />
+          </Col>
+        ))} */}
+         {retrievedNotes.map(note => (
+          <Col key={note._id}>
+            <NoteCard id={note._id} title={note.title} tags={note.tags} />
           </Col>
         ))}
       </Row>
@@ -165,6 +192,7 @@ export function NoteList({
 }
 
 function NoteCard({ id, title, tags }: SimplifiedNote) {
+  //console.log('NoteCard id', id)
   return (
     <>
     <Card

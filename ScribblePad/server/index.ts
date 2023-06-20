@@ -54,7 +54,9 @@ app.post('/editNote', noteController.editNote,(req: Request,res: Response) => {
   res.json('Editing Note')
 })
 
-
+app.get('/getAllNotes', noteController.getAllNotes ,(req: Request,res: Response) => {
+  res.json(res.locals.allNotes)
+})
 
 
 //const db = mongoose.connect('mongodb+srv://philip14633:philip14633@cluster0.xeien5n.mongodb.net/?retryWrites=true&w=majority')
@@ -66,8 +68,6 @@ app.use('*', (req,res) => {
 app.use((err:ErrorRequestHandler, req : Request, res: Response, next: NextFunction) => {
   res.json(err)
 });
-
-
 
 mongoose.connect(process.env.MONGO_URL!)
 .then(() => {

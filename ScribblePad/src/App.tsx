@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { Container } from "react-bootstrap"
 import { Routes, Route, Navigate } from "react-router-dom"
 import { NewNote } from "./NewNote"
@@ -42,7 +42,9 @@ function App() {
   const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", [])
   const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", [])
 
-  
+  const [retrievedNotes,setRetrievedNotes] = useState([])
+
+  console.log('retrievedNotes',retrievedNotes)
 
   const notesWithTags = useMemo(() => {
     return notes.map(note => {
@@ -57,11 +59,9 @@ function App() {
         { ...data, id: uuidV4(), tagIds: tags.map(tag => tag.id) },
       ]
     })
-
-    
   }
 
-  function onUpdateNote(id: string, { tags, ...data }: NoteData, title: string) {
+  function onUpdateNote(id: string, { tags, ...data }: NoteData) {
     setNotes(prevNotes => {
       return prevNotes.map(note => {
         if (note.id === id) {
@@ -72,7 +72,7 @@ function App() {
       })
     })
 
-    axios.post('/api/editNote', {title, data})
+    axios.post('/api/editNote', {data, tags})
     .then(response => {
       console.log(response.data)
     })
@@ -135,6 +135,8 @@ function App() {
               availableTags={tags}
               onUpdateTag={updateTag}
               onDeleteTag={deleteTag}
+              retrievedNotes={retrievedNotes}
+              setRetrievedNotes={setRetrievedNotes}
             />
           }
         />
@@ -148,6 +150,7 @@ function App() {
             />
           }
         />
+
         <Route path="/:id" element={<NoteLayout notes={notesWithTags} />}>
           <Route index element={<Note onDelete={onDeleteNote} />} />
           <Route
@@ -161,6 +164,7 @@ function App() {
             }
           />
         </Route>
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Container>

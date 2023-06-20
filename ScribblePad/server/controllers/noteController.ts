@@ -6,6 +6,7 @@ type noteController = {
     addNote: (req: Request, res: Response, next: NextFunction) => void
     deleteNote: (req: Request, res: Response, next: NextFunction) => void
     editNote: (req: Request, res: Response, next: NextFunction) => void
+    getAllNotes: (req: Request, res: Response, next: NextFunction) => void
 }   
 
 type tag = {
@@ -58,12 +59,22 @@ export const noteController: noteController = {
 
     editNote: async (req: Request, res: Response, next: NextFunction) => {
         console.log('inside editNote MiddleWare')
-        console.log('body',req.body)
+        //console.log('body',req.body)
         const {title,markdown} = req.body.data
+        const {tags} = req.body
         const {SSID: userId} = req.cookies
         //console.log('data', req.body.data)
-        await Note.findOneAndUpdate({title,userId},{markdown})
+        await Note.findOneAndUpdate({title,userId},{markdown,tags})
 
+        return next()
+    },
+
+    getAllNotes: async (req: Request, res: Response, next: NextFunction) => {
+        console.log('inside getallNotes middleware')
+        const {SSID: userId} = req.cookies
+        const allNotes = await Note.find({userId})
+        //console.log(allNotes)
+        res.locals.allNotes = allNotes
         return next()
     }
 }

@@ -3,7 +3,7 @@ import { NoteForm } from "./NoteForm"
 import { useNote } from "./NoteLayout"
 
 type EditNoteProps = {
-  onSubmit: (id: string, data: NoteData, title: string) => void
+  onSubmit: (id: string, data: NoteData) => void
   onAddTag: (tag: Tag) => void
   availableTags: Tag[]
 }
@@ -17,7 +17,7 @@ export function EditNote({ onSubmit, onAddTag, availableTags }: EditNoteProps) {
         title={note.title}
         markdown={note.markdown}
         tags={note.tags}
-        onSubmit={data => onSubmit(note.id, data,note.title,)}
+        onSubmit={data => onSubmit(note.id, data)}
         onAddTag={onAddTag}
         availableTags={availableTags}
         edit={true}
